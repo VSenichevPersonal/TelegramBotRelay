@@ -3,6 +3,10 @@
 # наш RU-сервер (Timeweb) физически не достаёт *.up.railway.app (та же стена, из-за
 # которой 117fstec и переехал). Проверено: с Timeweb VM *.onrender.com (216.24.57.x)
 # достижим по HTTPS, а *.up.railway.app и *.vercel.app — нет.
+#
+# Боевой сервис: srv-d97tpketrd3s739o7kqg → https://telegram-bot-relay.onrender.com
+# ВНИМАНИЕ: plan free усыпляет сервис после ~15 мин простоя (холодный старт — десятки
+# секунд, первый лид после паузы задержится). Для боевой доставки лидов — платный план.
 services:
   - type: web
     name: telegram-bot-relay

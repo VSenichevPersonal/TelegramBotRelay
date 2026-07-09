@@ -1,7 +1,7 @@
 {
   "name": "telegram-bot-relay",
   "version": "1.0.0",
-  "description": "Multi-tenant relay/gateway для Telegram Bot API (и вебхуков) — egress из RU-хостинга, где Telegram режется DPI. Деплой на Railway (EU).",
+  "description": "Multi-tenant relay/gateway для Telegram Bot API (и вебхуков) — egress из RU-хостинга, где Telegram режется DPI. Деплой на Render (Frankfurt).",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

@@ -1,7 +1,8 @@
 # TelegramBotRelay — гайд для LLM-агентов
 
 Назначение: мультитенант-релей Telegram Bot API. RU-сайты не могут звонить api.telegram.org (DPI);
-шлют через этот релей на Railway (EU). Работает в обе стороны (исходящие вызовы + входящие вебхуки).
+шлют через этот релей на Render (Frankfurt, EU). Работает в обе стороны (исходящие вызовы + входящие вебхуки).
+База в бою: https://telegram-bot-relay.onrender.com
 
 ## Как отправить сообщение (исходящее)
 POST {RELAY_URL}/v1/telegram/send

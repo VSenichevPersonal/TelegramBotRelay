@@ -4,7 +4,7 @@
  * Без внешних зависимостей. Даёт LLM-агенту инструменты слать Telegram через релей.
  *
  * ENV:
- *   RELAY_URL     — база релея, напр. https://telegrambotrelay-production.up.railway.app
+ *   RELAY_URL     — база релея, напр. https://telegram-bot-relay.onrender.com
  *   RELAY_API_KEY — apiKey сайта (из RELAY_SITES)
  *
  * Запуск: RELAY_URL=... RELAY_API_KEY=... node mcp/server.js

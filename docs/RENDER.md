@@ -48,6 +48,13 @@ curl -s -X PUT -H "$H" -H 'content-type: application/json' \
 ssh -i ~/.ssh/render_relay srv-d97tpketrd3s739o7kqg@ssh.frankfurt.render.com   # хост из дашборда
 ```
 
+## Авто-деплой (включён через GitHub Action)
+Сервис создан по repo-URL (без GitHub App) → нативный webhook Render не срабатывает.
+Авто-деплой сделан через **GitHub Action** `.github/workflows/render-deploy.yml`: на push в master
+дёргает Render API (`POST /v1/services/{id}/deploys`). Секреты репо: `RENDER_API_KEY`, `RENDER_SERVICE_ID`.
+Проверено: push → Action success → Render deploy live. `git push` = авто-деплой.
+Альтернатива (нативно): подключить GitHub App в дашборде Render (OAuth) — тогда webhook напрямую.
+
 ## Free-тариф: cold-start
 Free засыпает после 15 мин простоя → первый запрос ждёт ~30-60с, дальше быстро. Для лидов — редкая задержка на первое сообщение.
 **Лечение (keep-warm):** пинг `/health` каждые ~10 мин (cron-job.org / UptimeRobot / внешний cron) — держит тёплым, задержка → 0. Либо платный ($7/мес) always-on.

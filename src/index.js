@@ -107,6 +107,25 @@ app.post('/v1/telegram/method/:method', auth, async (req, res) => {
   }
 })
 
+// ---- ИСХОДЯЩЕЕ: прозрачный Bot API passthrough ----
+// Формат Telegram: /bot<token>/<method>. Позволяет сайту просто сменить apiRoot
+// (grammy client.apiRoot / базу raw-fetch) на URL релея — код почти не меняется.
+// Авторизация — по самому botToken (должен принадлежать сконфигурированному сайту).
+app.all('/bot:token/:method', async (req, res) => {
+  const { token, method } = req.params
+  const site = Object.values(SITES).find((s) => s.botToken === token)
+  if (!site) return res.status(401).json({ ok: false, error: 'unknown_bot_token' })
+  if (!/^[a-zA-Z_]+$/.test(method)) return res.status(400).json({ ok: false, error: 'bad_method' })
+  if (!rateLimit(site.id)) return res.status(429).json({ ok: false, error: 'rate_limited' })
+  try {
+    const r = await tgCall(token, method, req.body || {})
+    res.status(r.status).json(r.body)
+  } catch (e) {
+    console.error(`[passthrough:${method}] ${site.id}: ${e.message}`)
+    res.status(502).json({ ok: false, error: 'telegram_unreachable', detail: e.message })
+  }
+})
+
 // ---- ВХОДЯЩЕЕ: webhook fan-in → форвард на backend сайта ----
 app.post('/v1/webhook/:siteId', async (req, res) => {
   const site = SITES[req.params.siteId]

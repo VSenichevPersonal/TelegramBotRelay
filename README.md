@@ -70,11 +70,14 @@ await fetch(`${process.env.TELEGRAM_RELAY_URL}/v1/telegram/send`, {
 ```
 Входящие: `setWebhook` бота → `https://<relay>/v1/webhook/117fstec` (с `secret_token`).
 
-## Деплой на Railway
-1. Repo → Railway → New Project → Deploy from repo (Dockerfile авто).
+
+> ⚠️ **Деплоить на Render, НЕ на Railway.** Railway-edge (69.46.46.x) режется ТСПУ из РФ — RU-сервер не достаёт `*.up.railway.app`. Проверено: `*.onrender.com` достижим с Timeweb VM, Railway/Vercel — нет. См. render.yaml.
+
+## Деплой на Render
+1. Render → New → Blueprint (render.yaml) ИЛИ Web Service из repo (runtime node).
 2. ENV: `RELAY_SITES` (JSON выше). `PORT` Railway задаёт сам.
 3. Healthcheck `/health` (в railway.json).
-4. Взять публичный URL `*.up.railway.app` → он и есть база релея.
+4. Взять URL `*.onrender.com` → он и есть база релея.
 
 ## MCP (опционально)
 Простой stdio-MCP (`mcp/server.js`, без зависимостей) — даёт LLM-агенту инструменты `telegram_send`, `telegram_method`, `relay_health`. См. [llms.txt](llms.txt).

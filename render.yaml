@@ -1,0 +1,17 @@
+# Render Blueprint — деплой TelegramBotRelay.
+# ПОЧЕМУ RENDER, а не Railway: Railway-edge (69.46.46.x) режется ТСПУ из РФ —
+# наш RU-сервер (Timeweb) физически не достаёт *.up.railway.app (та же стена, из-за
+# которой 117fstec и переехал). Проверено: с Timeweb VM *.onrender.com (216.24.57.x)
+# достижим по HTTPS, а *.up.railway.app и *.vercel.app — нет.
+services:
+  - type: web
+    name: telegram-bot-relay
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install --omit=dev --no-audit --no-fund
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: RELAY_SITES
+        sync: false   # задать в дашборде Render (JSON с botToken/apiKey/backendUrl/webhookSecret)

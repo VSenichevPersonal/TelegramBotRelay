@@ -1,0 +1,37 @@
+# TelegramBotRelay — гайд для LLM-агентов
+
+Назначение: мультитенант-релей Telegram Bot API. RU-сайты не могут звонить api.telegram.org (DPI);
+шлют через этот релей на Railway (EU). Работает в обе стороны (исходящие вызовы + входящие вебхуки).
+
+## Как отправить сообщение (исходящее)
+POST {RELAY_URL}/v1/telegram/send
+Headers: Authorization: Bearer {apiKey}; Content-Type: application/json
+Body: { "chatId": "<id|@username>", "text": "<текст>", "parse_mode": "HTML"? }
+Ответ: как у Telegram — { "ok": true, "result": {...} } или { "ok": false, "error_code", "description" }.
+
+## Любой метод Bot API
+POST {RELAY_URL}/v1/telegram/method/{method}
+Body: тело метода Bot API (chat_id и пр.). Пример method: sendMessage, sendPhoto, getMe, editMessageText.
+
+## Входящий вебхук (настройка бота)
+setWebhook у бота → {RELAY_URL}/v1/webhook/{siteId} c secret_token = webhookSecret сайта.
+Релей проверит secret, ответит Telegram 200, форвардит апдейт на backendUrl сайта.
+
+## Health
+GET {RELAY_URL}/health → { ok, sites, ts }. Без авторизации.
+
+## Ошибки
+401 unauthorized (плохой apiKey) · 429 rate_limited · 400 bad_request · 404 unknown_site/not_found ·
+502 telegram_unreachable (сеть до Telegram — ретрай позже).
+
+## MCP-инструменты (mcp/server.js, stdio)
+- telegram_send { chatId, text, parse_mode? }
+- telegram_method { method, params }
+- relay_health {}
+ENV для MCP: RELAY_URL, RELAY_API_KEY.
+
+## Важно для агента
+- Никогда не логировать apiKey/botToken.
+- chatId — строка (ID менеджера/группы из конфига сайта), не выдумывать.
+- Для форматирования HTML экранировать <,>,& в пользовательском тексте.
+- Если 502 — Telegram временно недоступен с релея, повторить через паузу (не спамить).

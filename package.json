@@ -1,0 +1,19 @@
+{
+  "name": "telegram-bot-relay",
+  "version": "1.0.0",
+  "description": "Multi-tenant relay/gateway для Telegram Bot API (и вебхуков) — egress из RU-хостинга, где Telegram режется DPI. Деплой на Railway (EU).",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "mcp": "node mcp/server.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "optionalDependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  }
+}

@@ -2,7 +2,7 @@
  * TelegramBotRelay — мультитенант-шлюз Telegram Bot API.
  *
  * Зачем: RU-хостинг (Timeweb/YC) режет api.telegram.org DPI-ом (исходящее).
- * Релей живёт на Railway (EU), где Telegram доступен, и проксирует:
+ * Релей живёт на Render (Frankfurt), где Telegram доступен, и проксирует:
  *   - ИСХОДЯЩЕЕ: сайт → релей → api.telegram.org (sendMessage и любой метод Bot API)
  *   - ВХОДЯЩЕЕ:  Telegram → релей (webhook) → backendUrl сайта
  *
@@ -143,7 +143,12 @@ app.post('/v1/webhook/:siteId', async (req, res) => {
     const timer = setTimeout(() => ctrl.abort(), REQ_TIMEOUT)
     await fetch(site.backendUrl, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-relay-site': site.id },
+      headers: {
+        'content-type': 'application/json',
+        'x-relay-site': site.id,
+        // проброс секрета Telegram → backend валидирует его как свой TELEGRAM_WEBHOOK_SECRET
+        ...(site.webhookSecret ? { 'x-telegram-bot-api-secret-token': site.webhookSecret } : {}),
+      },
       body: JSON.stringify(req.body || {}),
       signal: ctrl.signal,
     })

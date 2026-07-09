@@ -1,0 +1,22 @@
+name: Render Deploy
+
+# Авто-деплой на Render при push в master.
+# Render создан по repo-URL (без GitHub App), поэтому нативный webhook не работает —
+# триггерим деплой через Render API. Секреты: RENDER_API_KEY, RENDER_SERVICE_ID (в Settings→Secrets).
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -d '{"clearCache":"do_not_clear"}'
+          echo "Render deploy triggered for ${{ secrets.RENDER_SERVICE_ID }}"

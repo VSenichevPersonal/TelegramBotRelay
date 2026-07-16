@@ -24,6 +24,16 @@ export function loadSites() {
       console.error(`[config] сайт "${id}" пропущен: нужны apiKey и botToken`)
       continue
     }
+    // webhookSecret обязателен: без него /v1/webhook/:siteId форвардит backend'у
+    // ЛЮБОЙ POST без проверки — молчаливая дыра изоляции при заведении нового тенанта.
+    if (cfg.backendUrl && !cfg.webhookSecret) {
+      console.error(`[config] сайт "${id}" пропущен: задан backendUrl без webhookSecret (открытый webhook)`)
+      continue
+    }
+    if (byKey[cfg.apiKey]) {
+      console.error(`[config] сайт "${id}" пропущен: apiKey совпадает с "${byKey[cfg.apiKey].id}" (коллизия)`)
+      continue
+    }
     const site = { id, ...cfg }
     byId[id] = site
     byKey[cfg.apiKey] = site

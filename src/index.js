@@ -130,11 +130,13 @@ app.all('/bot:token/:method', async (req, res) => {
 app.post('/v1/webhook/:siteId', async (req, res) => {
   const site = SITES[req.params.siteId]
   if (!site) return res.status(404).json({ ok: false, error: 'unknown_site' })
-  // Валидация секрет-токена Telegram (setWebhook secret_token)
+  // Валидация секрет-токена Telegram (setWebhook secret_token) — обязателен для сайтов
+  // с backendUrl (см. config.js: загрузка отбрасывает такие сайты без webhookSecret).
   if (site.webhookSecret) {
     const got = req.get('x-telegram-bot-api-secret-token')
     if (got !== site.webhookSecret) return res.status(403).json({ ok: false, error: 'bad_secret' })
   }
+  if (!rateLimit(site.id)) return res.status(429).json({ ok: false, error: 'rate_limited' })
   if (!site.backendUrl) return res.status(200).json({ ok: true, note: 'no_backend_configured' })
   // Отвечаем Telegram сразу, форвардим асинхронно (иначе ретраи Telegram)
   res.status(200).json({ ok: true })
